@@ -115,6 +115,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="dapi.h" />
+    <ClInclude Include="dapidde.h" />
+    <ClInclude Include="dapitest.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\dapitest.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="res\dapitest.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dapidde.cpp" />
+    <ClCompile Include="dapitest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

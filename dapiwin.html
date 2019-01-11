@@ -1,0 +1,368 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<TITLE>DAPI Specification - Windows Client</TITLE>
+<META NAME="Generator" CONTENT="TextPad 3.0">
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#004080" ALINK="#FF0000" >
+
+
+<!-- tnnavbartop -->
+[<A HREF="index.html">Dapi Main Page</A>]
+[<A HREF="dapiover.html">Specification Overview</A>]
+[<A HREF="dapimac.html">Mac Specs</A>]
+[<A HREF="dapiwin.html">Windows Specs</A>]
+
+
+
+<TABLE CELLSPACING=0 CELLPADDING=0 WIDTH="640" HEIGHT="55" >
+<TR>
+<TD VALIGN=top WIDTH=167><IMG SRC="imgs/walogo-b.gif" ALT="WorldsAway 
+Avatar Communities" HEIGHT=65 WIDTH=157 ALIGN=CENTER>
+<BR>
+<B><FONT FACE="Arial,Verdana,Helvetica" SIZE=+2>
+Tech Notes 
+</FONT>
+</TD>
+
+<TD><B><FONT FACE="Arial,Verdana,Helvetica" SIZE=+2>
+
+
+DAPI Specification - Windows Client
+
+</FONT></B></TD>
+</TR>
+</TABLE>
+
+<HR>
+<TABLE CELLSPACING=0 CELLPADDING=0 WIDTH="640"> 
+<TR>
+<TD>
+
+
+
+	<P>The main communication method to the client will be using Dynamic Data Exchange or DDE. This is the same method that we use to interface with Netscape and Internet Explorer so it has proven track record and is very powerful. Developers will not need a library or header files to use this method. We can add functionality without breaking previously developed applications. Also, DDE is supported by multiple programming languages.</P>
+	
+<H2>Register</H2>
+	<P> Each developer application will need a name to identify itself to DDE. For example, Netscape uses "<CODE>netscape</CODE>" and Internet Explorer uses "<CODE>iexplore</CODE>". WorldsAway will use "<CODE>WorldsApi</CODE>" for developers API DDE calls. </P>
+	<P> When a developer application runs, it must register itself to the client by sending it a WorldsApi_Register DDE message with its DDE identifier name. WorldsAway will maintain a list of applications that have registered with it. This list will have a maximum of 25 entries and will not store duplicate names. The list will be purged when WorldsAway exits. Case is also not sensitive, so "<CODE>Netscape</CODE>" and "<CODE>netscape</CODE>" will be the same application.</P>
+	<P>The syntax of the register command is as follows: </P>
+
+<H3>Service:</H3>
+	<P><CODE>WorldsApi</CODE></P>
+<H3>Topic:</H3>
+		<P><CODE>WorldsApi_Register</CODE></P>
+<H3>Item:</H3>
+	<P><CODE>WorldsApi_Register</CODE></P>
+<H3>Data String:</H3>
+	<P><var>AppName</var></P>
+		<P>Where <var>AppName</var> is the DDE name of developer application - must be null terminated</P>
+<H3>Transaction Type:</H3>
+		<P><CODE>XTYP_POKE</CODE></P>
+<H3>Sends:</H3>
+		<P>(one of the following codes via a <CODE>WorldsApi_Ack</CODE> message)</P>
+		<UL>
+			<LI>0 - command sent successfully 
+			<LI>8 - too many names already registered 
+			<LI>9 - application name already registered 
+		</UL>
+<H3>Description:</H3>
+	<P>This call tells WorldsAway to start sending the application <VAR>AppName</VAR> all API messages. The maximum length of <VAR>AppName</VAR> is 50 characters. If <VAR>AppName</VAR> is greater than 50 characters, it will truncate the name at 50 characters. The maximum number of applications that can be registered at one time is 25. All register requests after that will be denied. Case is not sensitive for <VAR>AppName</VAR>. Thus, "<CODE>Bingo</CODE>" and "<CODE>bingo</CODE>" will be the same application. It is not critical that applications have unique names but it would avoid problems with users running two different applications with the same name at the same time.</P>
+
+<H2>Unregister</H2>
+	<P>When a developer application exits, it must unregister itself from WorldsAway by sending it a <CODE>WorldsApi_Unregister</CODE> DDE message with its DDE identifier name.</P>
+	<P>The syntax of the unregister command is as follows:</P>
+
+<H3>Service:</H3>
+	<P><CODE>WorldsApi</CODE></P>
+
+<H3>Topic:</H3>
+	<P><CODE>WorldsApi_Unregister</CODE></P>
+
+<H3>Item:</H3>
+	<P><CODE>WorldsApi_Unregister</CODE></P>
+
+<H3>Data String:</H3>
+	<P><VAR>AppName</VAR></P>
+	<P><VAR>AppName</VAR> is the DDE name of developer application - must be null terminated</P>
+
+<H3>Transaction Type:</H3>
+	<P><CODE>XTYP_POKE</CODE></P>
+
+<H3>Sends:</H3>
+	<P>one of the following codes via a <CODE>WorldsApi_Ack</CODE> message:</P>
+	<UL>
+		<LI> 0 - command sent successfully 
+		<LI> 10 - application name was not registered
+	</UL>
+
+<H3>Description:</H3>
+	<P>This call tells WorldsAway to stop sending API messages.</P>
+	<P>The maximum length of <VAR>AppName</VAR> is 50 characters. If <VAR>AppName</VAR> is greater than 50 characters, it will truncate the name at 50 characters.</P>
+
+<H2>Send</H2>
+	<P>Once an application has registered, it can start sending and receiving data.</P>
+	<P>To send a data stream, it must use the <CODE>WorldsApi_Send</CODE> DDE command. This command allows sending data to one avatars, multiple avatars or all the avatars in the current region. To send to multiple avatars, the <VAR>AvatarName</VAR> argument must be a long string of names separated by the formfeed character (<CODE>0x0C</CODE>). To send to all the avatars in a region, leave the <VAR>AvatarName</VAR> argument blank. </P>
+	<P>The syntax of the send command is as follows:</P>
+
+<H3>Service:</H3>
+	<P><CODE>WorldsApi</CODE></P>
+
+<H3>Topic:</H3>
+	<P><CODE>WorldsApi_Send</CODE></P>
+
+<H3>Item:</H3>
+	<P><CODE>WorldsApi_Send</CODE></P>
+
+<H3>Data String:</H3>
+	<P><VAR>AppName</VAR>&lt;FF>
+	<VAR>AvatarName</VAR>
+	[&lt;LF><VAR>AvatarName</VAR>
+	[&lt;LF><VAR>AvatarName</VAR>]...]&lt;FF>
+	<VAR>DataLength</VAR>&lt;FF>
+	<VAR>Data</VAR> </P>
+
+	<P>Where:</P>
+	<UL>
+	<LI> &lt;FF> represents a formfeed character (<CODE>0x0C</CODE>). Arguments must be separated by &lt;FF> characters
+	<LI> &lt;LF> represents a linefeed character (<CODE>0x0A</CODE>). Arguments that may be a list must separate list items by &lt;FF> characters.
+	<LI><VAR>AppName</VAR> is the DDE name of developer application
+	<LI><VAR>AvatarName</VAR> is the name or names of avatars to send to. If AvatarName is blank, then send to all the avatars in the same region as the sender. If more than one name is specified, names must be separated by a linefeed character &lt;LF> (0x0A).
+	<LI><VAR>DataLength</VAR> is the length of data stream
+	<LI><VAR>Data</VAR> is the data to send - may contain null's or any other special characters
+</UL>
+
+<H3>Transaction Type:</H3>
+	<P><CODE>XTYP_POKE</CODE></P>
+
+<H3>Sends:</H3>
+	<P>one of the following codes via a <CODE>WorldsApi_Ack</CODE> message:</P>
+	<UL>
+		<LI> 0 - command sent successfully 
+		<LI> 1 - target avatar is not logged on *
+		<LI> 2 - your avatar not allowed to send/receive API messages 
+		<LI> 3 - target avatar is not allowed to send/receive API messages *
+		<LI> 4 - you are in a region that does not allow API messages 
+		<LI> 5 - target avatar is in a region that doesn't allow API messages *
+		<LI> 6 - your avatar is currently busy 
+		<LI> 7 - target avatar is currently busy *
+		<LI> 10 - application name was not registered 
+		<LI> 14 - one or more arguments are missing 
+		<LI> 15 - data length <= 0 
+		<LI> 16 - no data was specified 
+		<LI> 17 - you have not logged in yet 
+	</UL>
+	<P><STRONG>Note:</STRONG> Result codes marked by asterisk (*) are only returned if a single target avatar was specified in the Send request. If multiple avatars or the entire region are specified, result 0 will be returned, even if results codes 1, 3, 5 or 7 apply to any or all of the target avatars individually.</P>
+
+<H3>Secondary Actions:</H3>
+	<P>Sends a <CODE>WorldsApi_Receive</CODE> DDE message to the target if successful.</P>
+<H3>Description:</H3>
+	<P>This call sends a data stream to the specified avatar or avatars, or to everyone in the region is no avatar is specified. </P>
+	<P>The maximum length of <VAR>AppName</VAR> is 50 characters. If <VAR>AppName</VAR> is greater than 50 characters, it will truncate the name at 50 characters.</P>
+
+	<P>The maximum length of <VAR>AvatarName</VAR> is 255 characters. If <VAR>AvatarName</VAR> is greater than 255 characters, it will truncate the name(s) at 255 characters.</P> 
+
+	<P>If more than one avatar name is specified in <VAR>AvatarName</VAR>, each name must be separated by the linefeed character which is 10 in decimal and <CODE>0x0A</CODE> in hex. There must be no blanks before or after the linefeed characters unless they are part of the avatar name.</P> 
+
+	<P>The maximum amount of data that can be sent is decimal 4000 bytes. If <VAR>DataLength</VAR> is greater than 4000, it will truncate the data at 4000 bytes.</P>
+	<P>The arguments in the argument string must be separated by formfeed characters which is 12 in decimal and <CODE>0x0c</CODE> in hex. There must be no blanks before or after the formfeed characters unless they are part of the argument.</P>
+
+	<P>Note that if <VAR>AvatarName</VAR> contains multiple avatars, result codes 1, 3, 5 and 7 will not be returned even if all the avatars meet the description of the error. Thus the command will always return 0 for multiple avatars unless errors 2, 4, 6, 10, 14, 15, 16 or 17 occur. To get codes 1, 3, 5 and 7, a developer application should send separate commands to each avatar.</P>
+	
+<H2>ACK (acknowledge)</H2>
+	<P>When an application makes any WorldsApi command except for the <CODE>WorldsApi_GetAllText</CODE> command, an acknowledge command is sent back to the application via a <CODE>WorldsApi_Ack</CODE> message. This message contains the status of the command.</P>
+	<!-- 	<P>The developer application must implement its own <CODE>WorldsApi_Ack</CODE> command.</P> -->
+	<P> The syntax of the acknowledge message is as follows:</P>
+
+<H3>Service:</H3>
+	<P><CODE>WorldsApi</CODE></P>
+
+<H3>Topic:</H3>
+	<P><CODE>WorldsApi_Ack</CODE></P>
+
+<H3>Item:</H3>
+	<P><CODE>WorldsApi_Ack</CODE></P>
+
+<H3>Data String:</H3>
+	<UL>
+		<LI> <var>Result</var>
+	</UL>
+
+	<P>Where:</P>
+	<P><var>Result</var> is one of the following result codes</P>
+	<UL>
+		<LI> 0 - command sent successfully 
+		<LI> 1 - target avatar is not logged on 
+		<LI> 2 - your avatar not allowed to send/receive API messages 
+		<LI> 3 - target avatar is not allowed to send/receive API messages 
+		<LI> 4 - you are in a region that does not allow API messages 
+		<LI> 5 - target avatar is in a region that doesn't allow API messages 
+		<LI> 6 - your avatar is currently busy 
+		<LI> 7 - target avatar is currently busy 
+		<LI> 8 - too many names already registered 
+		<LI> 9 - application name already registered 
+		<LI> 10 - application name was not registered 
+		<LI> 11 - no text was specified 
+		<LI> 12 - mode was ESP but no avatar name was specified 
+		<LI> 13 - mode was speak or think but your avatar is a ghost 
+		<LI> 14 - one or more arguments are missing 
+		<LI> 15 - data length <= 0 
+		<LI> 16 - no data was specified 
+		<LI> 17 - you have not logged in yet 
+	</UL>
+
+<H3>Transaction Type:</H3>
+	<P><CODE>XTYP_POKE</CODE></P>
+
+<H3>Description:</H3>
+	<P>This message is sent from WorldsAway to the developer application when it receives any WorldsApi command except for the <CODE>WorldsApi_GetAllText</CODE> command. A developer application should wait for this message after it sends a WorldsApi command to make sure it was sent successfully but it is not mandatory.</P>
+	<P>In order for an developer application to receive an ACK message, it must send the <VAR>AppName</VAR> parameter correctly for all commands. Otherwise, WorldsAway will not know which application to send the result codes to.</P>
+
+<H2>Receive</H2>
+	<P>When a message is sent using the <CODE>WorldsApi_Send</CODE> command, the avatar that the message was directed to receives a <CODE>WorldsApi_Receive</CODE>. The message is sent to the developer application specified by the sender's <VAR>AppName</VAR> only if the developer application has registered with the receiving client.</P>
+	<P>The syntax of the receive message is as follows:</P>
+
+<H3>Service:</H3>
+	<P><CODE>WorldsApi</CODE></P>
+
+<H3>Topic:</H3>
+	<P><CODE>WorldsApi_Receive</CODE></P>
+
+<H3>Item:</H3>
+	<P><CODE>WorldsApi_Receive</CODE></P>
+
+<H3>Data String:</H3>
+	<P><VAR>AvatarName</VAR>&lt;FF>
+	<VAR>DataLength</VAR>&lt;FF>
+	<VAR>Data</VAR></P>
+	<P>Where:</P>
+	<UL>
+		<LI>&lt;FF> represents a formfeed character (<CODE>0x0C</CODE>). Arguments must be separated by &lt;FF> characters
+
+		<LI><VAR>AvatarName</VAR> is the name of avatar that sent the data
+
+		<LI><VAR>DataLength</VAR> is the length of data stream
+
+		<LI><VAR>Data</VAR> is the data sent
+	</UL>
+
+<H3>Transaction Type:</H3>
+	<P><CODE>XTYP_POKE</CODE></P>
+
+<H3>Description:</H3>
+	<P>This is the message that WorldsAway sends when it receives a message from a <CODE>WorldsApi_Send</CODE> message.</P>
+	<P>Developer applications must be set up to listen for this message and process it when it arrives.</P>
+	<P>The maximum length of <VAR>AvatarName</VAR> is 31 characters.</P>
+	<P>The maximum length <VAR>DataLength</VAR> is 4000 bytes.</P>
+	The arguments in the argument string will be separated by the formfeed character which is 12 in decimal and <CODE>0x0c</CODE> in hex. There will be no blanks before or after the formfeed characters unless they are part of the argument.
+	
+<H2>Communicate</H2>
+	<P>The <CODE>WorldsApi_Communicate</CODE> command allows an application to send a speech, thought or ESP message. It has the exact same effect as an avatar in speech, thought or ESP mode typing in a string and pressing enter.</P>
+	<P>The syntax of the communicate command is as follows:</P>
+
+<H3>Service:</H3>
+	<P><CODE>WorldsApi</CODE></P>
+
+<H3>Topic:</H3>
+	<P><CODE>WorldsApi_Communicate</CODE></P>
+
+<H3>Item:</H3>
+	<P><CODE>WorldsApi_Communicate</CODE></P>
+
+<H3>Data String:</H3>
+	<P><VAR>AppName</VAR>&lt;FF>
+	<VAR>Mode</VAR>&lt;FF>
+	<VAR>AvatarName</VAR>&lt;FF>
+	<VAR>Text</VAR></P>
+	
+	<P>Where:</P>
+	<UL>
+		<LI> &lt;FF> represents a formfeed character (<CODE>0x0C</CODE>). Arguments must be separated by &lt;FF> characters
+		<VAR>AppName</VAR> - DDE name of developer application
+		<VAR>Mode</VAR> is the communication type for the message. Must be one of:
+		<UL>
+			<LI> 0 - speak (default)
+			<LI> 1 - think
+			<LI> 2 - ESP
+		</UL>
+		<LI><VAR>AvatarName</VAR> is the name of avatar to send data to if type is ESP; else it is ignored - only one name allowed
+		<LI><VAR>Text</VAR> is the text to send.
+	</UL>
+	
+<H3>Transaction Type:</H3>
+	<P><CODE>XTYP_POKE</CODE></P>
+
+<H3>Sends:</H3>
+	<P>one of the following codes via a <CODE>WorldsApi_Ack</CODE> message:</P>
+
+	<UL>
+		<LI> 0 - command sent successfully
+		<LI> 6 - your avatar is currently busy
+		<LI> 10 - application name was not registered 
+		<LI> 11 - no text was specified 
+		<LI> 12 - mode was ESP but no avatar name was specified 
+		<LI> 13 - mode was speak or think but your avatar is a ghost 
+		<LI> 14 - one or more arguments are missing 
+		<LI> 17 - you have not logged in yet 
+	</UL>
+<H3>Description:</H3>
+	This call sends the specified <VAR>Text</VAR> as a speak or think message depending on if the client is currently in speak or think mode. 
+	The maximum length of <VAR>AvatarName</VAR> is 31 characters. If <VAR>AvatarName</VAR> is greater than 31 characters, it will truncate the name at 31 characters.
+	The maximum length of <VAR>Text</VAR> is 255 characters. If Text is greater than 255 characters, it will be truncated at 255 characters.
+	<P>The arguments in the argument string must be separated by formfeed characters which is 12 in decimal and <CODE>0x0c</CODE> in hex. There must be no blanks before or after the formfeed characters unless they are part of the argument.</P>
+	If no mode is specified, it will default to 0 (speech).
+
+<H2>GetAllText</H2>
+	<P>The <CODE>WorldsApi_GetAllText</CODE> command allows an application to retrieve the entire contents of the speech window. Only the text that is currently visible in the window and text visible via the scrollbar will be retrievable.</P>
+	<P>Note that this is the only command that uses the <CODE>XTYP_REQUEST</CODE> transaction type which also means that the AppName must be sent as an item string. If the command fails, it will return an empty string.</P>
+	<P>The syntax of the get all text command is as follows:</P>
+
+<H3>Service:</H3>
+	<P><CODE>WorldsApi</CODE></P>
+
+<H3>Topic:</H3>
+	<P><CODE>WorldsApi_GetAllText</CODE></P>
+
+<H3>Item:</H3>
+	<P><VAR>AppName</VAR></P>
+		<P><VAR>AppName</VAR> is the DDE name of developer application - must be null terminated</P>
+
+<H3>Transaction Type:</H3>
+	<CODE>XTYP_REQUEST</CODE>
+
+<H3>Returns:</H3>
+	<P>Text from speech window (via a <CODE>HDDEDATA</CODE> structure).</P>
+
+<H3>Sends:</H3>
+	<P>one of the following codes via a <CODE>WorldsApi_Ack</CODE> message:</P>
+	<UL>
+		<LI> 0 - command sent successfully 
+		<LI> 10 - application name was not registered.
+		<LI> 17 - you have not logged in yet 
+	</UL>
+
+<H3>Description:</H3>
+	<P>This call retrieves the entire contents of the speech window. The return text will be null terminated so a string length function such as <CODE>strlen</CODE> can be used to retrieve the length.</P>
+</TD>
+</TR>
+</TABLE>
+
+<HR><!-- tnnavbarfoot -->
+[<A HREF="index.html">Dapi Main Page</A>]
+[<A HREF="dapiover.html">Specification Overview</A>]
+[<A HREF="dapimac.html">Mac Specs</A>]
+[<A HREF="dapiwin.html">Windows Specs</A>]
+
+<HR><TABLE>
+<TR>
+<TD ALIGN=CENTER>
+<P><FONT SIZE=-2>
+&copy; 1997 
+<A HREF="http://fsba.com">Fujitsu Systems Business of America,Inc.</A>
+</FONT></P> </TD> </TR>
+</TABLE>
+
+</BODY>
+</HTML>
+

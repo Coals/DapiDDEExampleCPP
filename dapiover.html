@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<TITLE>DAPI Specification - Overview</TITLE>
+<META NAME="Generator" CONTENT="TextPad 3.0">
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#004080" ALINK="#FF0000" >
+
+
+<!-- tnnavbartop -->
+[<A HREF="index.html">Dapi Main Page</A>]
+[<A HREF="dapiover.html">Specification Overview</A>]
+[<A HREF="dapimac.html">Mac Specs</A>]
+[<A HREF="dapiwin.html">Windows Specs</A>]
+
+
+
+
+<TABLE CELLSPACING=0 CELLPADDING=0 WIDTH="640" HEIGHT="55" >
+<TR>
+<TD VALIGN=top WIDTH=167><IMG SRC="imgs/walogo-b.gif" ALT="WorldsAway 
+Avatar Communities" HEIGHT=65 WIDTH=157 ALIGN=CENTER>
+<BR>
+<B><FONT FACE="Arial,Verdana,Helvetica" SIZE=+2>
+Tech Notes 
+</FONT>
+</TD>
+
+<TD><B><FONT FACE="Arial,Verdana,Helvetica" SIZE=+2>
+
+DAPI Specification - Overview
+</FONT></B></TD>
+</TR>
+</TABLE>
+
+<HR>
+
+<TABLE CELLSPACING=0 CELLPADDING=0 WIDTH="640"> 
+<TR>
+<TD>
+
+
+
+	<P>This document outlines the supported Developer's API (DAPI) for WorldsAway add-on external applications (DAPI applications).</P>
+<H2>General Description</H2>
+	<P>In-world entrepreneurs have been using the ESP feature of the client to develop there own add-on applications, such as the popular 'Bingo' apps.</P>
+	<P>We have added a supported, platform-independent interface to the client which will allow developers to send messages through the client to other clients running in the same world.</P>
+	<P>Developers can more easily develop applications for use in WorldsAway such as games (chess, checkers,bingo, poker, blackjack, etc.) or any application that can use a generic text stream to communicate.</P>
+	<P>DAPI is available for both the Windows client, using Dynamic Data Exchange (DDE) and the Macintosh client using Apple events.</P>
+<H2>User Interface</H2>
+	<P>When the DAPI application starts it must <STRONG>Register</STRONG> a unique application name with WorldsAway. The Register entry remains in effect until the DAPI application either <STRONG>Unregisters</STRONG>, or until the WorldsAway client exits. At exit WorldsAway discards all Register entries.</P>
+	<P>Once Registered, the application can </P>
+	<UL>
+	<LI> <STRONG>Send</STRONG> messages to DAPI applications running on other WorldsAway clients,
+	<LI> <STRONG>Receive</STRONG> messages from DAPI applications running on other users WorldsAway clients,
+	<LI><STRONG>Communicate</STRONG> by sending regular speech, thought or ESP messages to the world,
+	<LI><STRONG>Get the text</STRONG> of the regular speech, thought or ESP messages displayed in its WorldsAway client's message display area.
+</UL>
+<H2>Features</H2>
+	<P>The Developers API supports launching multiple applications through the current WorldsAway client (Register, Unregister).</P>
+	<P>The Developers API allows general data exchange between multiple clients through the world server (Send, Receive, Communicate, Get text).</P>
+<H2>Controls</H2>
+	<P>The Developers API requires that users be logged into a WorldsAway world for the entire time they are running the DAPI application.</P>
+	<P>The WorldsAway server limits the number of messages sent by an individual client to less than 10 per second. Attempting to send more 10 or more messages in a second will cause the world server to log the client out.</P>
+	<P>DAPI attempts to prevent this by throttling calls that send messages to the server (Send and Communicate). However, if the end user interacts with the regular client interface while DAPI is sending messages, this may cause the total message count to exceed the allowed less than 10 per second.</P>
+	<P>The Developers API allows World Producers to control when a user can use DAPI. Settings are:</P>
+	<UL>
+		<LI> <EM>avatar</EM> (user must be an embodied avatar to use DAPI)
+		<LI> <EM>ghost</EM> (user must be a ghost to use DAPI)
+		<LI> <EM>both</EM> (user may use DAPI in either state)
+		<LI> <EM>none</EM> (user may not use DAPI)
+	</UL>
+	<P>The Developers API shall allow World Producers to control in which regions DAPI applications may be used.</P>
+</TD>
+</TR>
+</TABLE>
+
+<HR><!-- tnnavbarfoot -->
+[<A HREF="index.html">Dapi Main Page</A>]
+[<A HREF="dapiover.html">Specification Overview</A>]
+[<A HREF="dapimac.html">Mac Specs</A>]
+[<A HREF="dapiwin.html">Windows Specs</A>]
+
+<HR><TABLE>
+<TR>
+<TD ALIGN=CENTER>
+<P><FONT SIZE=-2>
+&copy; 1997 
+<A HREF="http://fsba.com">Fujitsu Systems Business of America,Inc.</A>
+</FONT></P> </TD> </TR>
+</TABLE>
+
+</BODY>
+</HTML>
